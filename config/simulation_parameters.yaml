@@ -1,0 +1,4 @@
+sensor_frequency: 20 # frequency of sensor in Hz
+simulation_time: 30 # simulation time in s
+origin: [0, 0] # corner of the pitch in m
+field_size: [60, 100] # opposite corner of the pitch in m
