@@ -1,5 +1,5 @@
-import random
-from src.position_loader import ConfigLoader
+from scipy.optimize import minimize
+from src.config_loader import ConfigLoader
 import numpy as np
 import random
 import math
@@ -53,14 +53,46 @@ class Player:
         else:
             average_speed = 0
         self.velocity_vector = [
-            float(average_speed * math.cos(movement_trajectory*math.pi/180)), float(average_speed * math.sin(movement_trajectory*math.pi/180))]
+            float(average_speed * math.cos(movement_trajectory * math.pi / 180)),
+            float(average_speed * math.sin(movement_trajectory * math.pi / 180))]
 
     def move_player(self):
         self.random_velocity()
         move_vector = [n * 1 / simulation_parameters["sensor_frequency"] for n in self.velocity_vector]
-        self.current_coordinates = [self.current_coordinates[0] + move_vector[0], self.current_coordinates[1] + move_vector[1]]
+        self.current_coordinates = [self.current_coordinates[0] + move_vector[0],
+                                    self.current_coordinates[1] + move_vector[1]]
 
-    # def move_player(self, velocity_vector):
+    def receiver_distance(self):
+        bottom_right_sensor = math.hypot(self.current_coordinates[0] - simulation_parameters["bottom_right_corner"][0],
+                                         self.current_coordinates[1] - simulation_parameters["bottom_right_corner"][1])
+        bottom_left_sensor = math.hypot(self.current_coordinates[0] - simulation_parameters["origin"][0],
+                                        self.current_coordinates[1] - simulation_parameters["origin"][1])
+        top_right_sensor = math.hypot(self.current_coordinates[0] - simulation_parameters["field_size"][0],
+                                      self.current_coordinates[1] - simulation_parameters["field_size"][1])
+        top_left_sensor = math.hypot(self.current_coordinates[0] - simulation_parameters["top_left_corner"][0],
+                                     self.current_coordinates[1] - simulation_parameters["top_left_corner"][1])
+        sensor_array = [bottom_left_sensor, bottom_right_sensor, top_left_sensor, top_right_sensor]
+        return sensor_array
 
-    # def noise_generator(self):
-    #     self.current_coordinates = self.current_coordinates + np.random.normal(-0.3, 0.3, 1)
+    @staticmethod
+    def noise_generator(sensor_array):
+        return sensor_array + np.random.normal(-0.3, 0.3, 1)
+
+    def multilateration(self):
+        def error(x, c, r):
+            return sum([(np.linalg.norm(x - c[i]) - r[i]) ** 2 for i in range(len(c))])
+
+        receiver_coordinates = list(
+            np.array([simulation_parameters["origin"], simulation_parameters["bottom_right_corner"],
+                      simulation_parameters["top_left_corner"], simulation_parameters["field_size"]]))
+
+        distances_to_receiver = self.noise_generator(self.receiver_distance()) # apply noise to receiver signals
+
+        l = len(receiver_coordinates)
+        S = sum(distances_to_receiver)
+        # compute weight vector for initial guess
+        W = [((l - 1) * S) / (S - w) for w in distances_to_receiver]
+        # get initial guess of point location
+        x0 = sum([W[i] * receiver_coordinates[i] for i in range(l)])
+        # optimize distance from signal origin to border of spheres
+        return minimize(error, x0, args=(receiver_coordinates, distances_to_receiver), method='Nelder-Mead').x

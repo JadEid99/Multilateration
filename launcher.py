@@ -1,4 +1,4 @@
-from src.position_loader import ConfigLoader
+from src.config_loader import ConfigLoader
 from src.visuals import Visuals
 from src.ranging_generator import Player
 import time
@@ -14,9 +14,12 @@ for position in initial_coordinates:
     team[position].assign_coordinates()
 
 start_time = time.time()
-while time.time() < start_time + simulation_parameters["simulation_time"]:
-    time.sleep(1/simulation_parameters["sensor_frequency"])
+while time.time() < start_time + simulation_parameters["simulation_time"]: # simulation runtime set in configuration file
+    time.sleep(1/simulation_parameters["sensor_frequency"]) # frequency set in configuration file to simulate sensor refresh rate
     v1 = Visuals(team)
     v1.positions_visual()
     for position in initial_coordinates:
         team[position].move_player()
+        print(team["RB"].current_coordinates)
+
+        print(team["RB"].multilateration())

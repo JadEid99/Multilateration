@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-from src.ranging_generator import Player
 
 
 class Visuals:
