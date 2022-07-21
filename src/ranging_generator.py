@@ -57,7 +57,6 @@ class Player:
             float(average_speed * math.sin(movement_trajectory * math.pi / 180))]
 
     def move_player(self):
-        self.random_velocity()
         move_vector = [n * 1 / simulation_parameters["sensor_frequency"] for n in self.velocity_vector]
         self.current_coordinates = [self.current_coordinates[0] + move_vector[0],
                                     self.current_coordinates[1] + move_vector[1]]
@@ -96,3 +95,6 @@ class Player:
         x0 = sum([W[i] * receiver_coordinates[i] for i in range(l)])
         # optimize distance from signal origin to border of spheres
         return minimize(error, x0, args=(receiver_coordinates, distances_to_receiver), method='Nelder-Mead').x
+
+    #def handle_noise(self):
+
