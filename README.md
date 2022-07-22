@@ -34,7 +34,7 @@ The script should prompt for two user entries:
 
 Expected results:
 1. Animation of exact player positions on pitch.
-2. 
+
 ![ExactAnimation](assets/exact_positions.png)
 
 2. Animation of estimated player positions on pitch calculated using multilateration algorithm.
