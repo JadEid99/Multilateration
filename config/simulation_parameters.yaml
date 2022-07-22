@@ -1,7 +1,7 @@
 sensor_frequency: 20 # frequency of sensor in Hz
-simulation_time: 20 # simulation time in s
+simulation_time: 30 # simulation time in s
 origin: [0, 0] # corner of the pitch in m
 bottom_right_corner: [60, 0]
 top_left_corner: [0, 100]
 field_size: [60, 100] # opposite corner of the pitch in m
-change_direction: 10 # time in seconds that the player maintains constant velocity
+change_direction: 5 # time in seconds that the player maintains constant velocity
