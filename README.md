@@ -30,11 +30,10 @@ The script should prompt for two user entries:
 1. Football Pitch Animation: Answer with 'True' or 'False' - Will display an animation of the players moving across the football pitch if True (might impact performance).
 2. Tracked Player: Answer with one of the following {GK, RB, CB1, CB2, LB, CM1, CM2, CAM, RW, LW, ST} - Prompts for a position to be selected. The position is used to track player movement.
 
-## Development
+## :information_source: Expected Results
 
-Expected results:
 1. Animation of exact player positions on pitch.
-2. 
+
 ![ExactAnimation](assets/exact_positions.png)
 
 2. Animation of estimated player positions on pitch calculated using multilateration algorithm.
