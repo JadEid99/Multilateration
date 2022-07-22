@@ -35,19 +35,19 @@ The script should prompt for two user entries:
 Expected results:
 1. Animation of exact player positions on pitch.
 
-![ExactAnimation](/assets/exact_positions.png)
+![ExactAnimation](assets/exact_positions.png)
 
 2. Animation of estimated player positions on pitch calculated using multilateration algorithm.
 
-![EstimatedAnimation](/assets/estimated_positions.png)
+![EstimatedAnimation](assets/estimated_positions.png)
 
 3. Variation of exact player position over simulation time.
 
-![ExactAnimation](/assets/exact_position.png)
+![ExactAnimation](assets/exact_position.png)
 
 4. Variation of estimated player position over simualtion time (without filter).
 
-![ExactAnimation](/assets/multilateration_noise.png)
+![ExactAnimation](assets/multilateration_noise.png)
 
 5. Variation of estimated player position over simulation time (with Kalman filter applied).
 
