@@ -31,7 +31,7 @@ The script should prompt for two user entries:
 2. Tracked Player: Answer with one of the following {GK, RB, CB1, CB2, LB, CM1, CM2, CAM, RW, LW, ST} - Prompts for a position to be selected. The position is used to track player movement.
 
 ## :information_source: Expected Results
-
+(Please note that these are only examples as player movement is randomized)
 1. Animation of exact player positions on pitch.
 
 ![ExactAnimation](assets/exact_positions.png)
