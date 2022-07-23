@@ -6,13 +6,6 @@ import math
 from src.config_loader import ConfigLoader
 
 
-# Configuration loading for initial player positions and simulation parameters from config files
-player_config = ConfigLoader("config/initial_coordinates.yaml")
-simulation_config = ConfigLoader("config/simulation_parameters.yaml")
-initial_coordinates = player_config.load_config()
-simulation_parameters = simulation_config.load_config()
-
-
 class Player:
     """
        A class to represent players on a football pitch.
@@ -36,6 +29,8 @@ class Player:
         self.current_coordinates = current_coordinates
         self.velocity_vector = velocity_vector
         self.estimated_coordinates = estimated_coordinates
+        self.initial_coordinates = ConfigLoader("config/initial_coordinates.yaml").load_config()
+        self.simulation_parameters = ConfigLoader("config/simulation_parameters.yaml").load_config()
 
     def assign_coordinates(self):
         """
@@ -45,7 +40,7 @@ class Player:
         -------
         None
         """
-        self.current_coordinates = player_config.load_config()[self.position]
+        self.current_coordinates = self.initial_coordinates[self.position]
 
     def random_velocity(self):
         """
@@ -58,25 +53,25 @@ class Player:
         average_speed = random.randint(0, 8)  # average football player speed is around 8 m/s
 
         # Method identifies the quadrant that the player is located in and only allows movement to keep player on the pitch (works to a certain extent).
-        quadrant1 = simulation_parameters["origin"][0] <= self.current_coordinates[0] <= \
-                    simulation_parameters["field_size"][0] / 2 \
-                    and simulation_parameters["origin"][1] <= self.current_coordinates[1] <= \
-                    simulation_parameters["field_size"][1] / 2  # check if it is in the lower left quadrant of the pitch
+        quadrant1 = self.simulation_parameters["origin"][0] <= self.current_coordinates[0] <= \
+                    self.simulation_parameters["field_size"][0] / 2 \
+                    and self.simulation_parameters["origin"][1] <= self.current_coordinates[1] <= \
+                    self.simulation_parameters["field_size"][1] / 2  # check if it is in the lower left quadrant of the pitch
 
-        quadrant2 = simulation_parameters["field_size"][0] / 2 <= self.current_coordinates[0] <= \
-                    simulation_parameters["field_size"][0] \
-                    and simulation_parameters["field_size"][1] / 2 >= self.current_coordinates[1] >= \
-                    simulation_parameters["origin"][1]  # check if it is in the lower right quadrant of the pitch
+        quadrant2 = self.simulation_parameters["field_size"][0] / 2 <= self.current_coordinates[0] <= \
+                    self.simulation_parameters["field_size"][0] \
+                    and self.simulation_parameters["field_size"][1] / 2 >= self.current_coordinates[1] >= \
+                    self.simulation_parameters["origin"][1]  # check if it is in the lower right quadrant of the pitch
 
-        quadrant3 = simulation_parameters["origin"][0] <= self.current_coordinates[0] <= \
-                    simulation_parameters["field_size"][0] / 2 \
-                    and simulation_parameters["field_size"][1] / 2 <= self.current_coordinates[1] <= \
-                    simulation_parameters["field_size"][1]  # check if it is in the top left quadrant of the pitch
+        quadrant3 = self.simulation_parameters["origin"][0] <= self.current_coordinates[0] <= \
+                    self.simulation_parameters["field_size"][0] / 2 \
+                    and self.simulation_parameters["field_size"][1] / 2 <= self.current_coordinates[1] <= \
+                    self.simulation_parameters["field_size"][1]  # check if it is in the top left quadrant of the pitch
 
-        quadrant4 = simulation_parameters["field_size"][0] / 2 <= self.current_coordinates[0] <= \
-                    simulation_parameters["field_size"][0] \
-                    and simulation_parameters["field_size"][1] / 2 <= self.current_coordinates[1] <= \
-                    simulation_parameters["field_size"][1]  # check if it is in the top right quadrant of the pitch
+        quadrant4 = self.simulation_parameters["field_size"][0] / 2 <= self.current_coordinates[0] <= \
+                    self.simulation_parameters["field_size"][0] \
+                    and self.simulation_parameters["field_size"][1] / 2 <= self.current_coordinates[1] <= \
+                    self.simulation_parameters["field_size"][1]  # check if it is in the top right quadrant of the pitch
 
         if quadrant1:
             movement_trajectory = random.randint(0, 90)
@@ -101,7 +96,7 @@ class Player:
         -------
         None
         """
-        move_vector = [n * 1 / simulation_parameters["sensor_frequency"] for n in self.velocity_vector]
+        move_vector = [n * 1 / self.simulation_parameters["sensor_frequency"] for n in self.velocity_vector]
         self.current_coordinates = [self.current_coordinates[0] + move_vector[0],
                                     self.current_coordinates[1] + move_vector[1]]
 
@@ -113,14 +108,14 @@ class Player:
         -------
         sensor_array: list of floats
         """
-        bottom_right_sensor = math.hypot(self.current_coordinates[0] - simulation_parameters["bottom_right_corner"][0],
-                                         self.current_coordinates[1] - simulation_parameters["bottom_right_corner"][1])
-        bottom_left_sensor = math.hypot(self.current_coordinates[0] - simulation_parameters["origin"][0],
-                                        self.current_coordinates[1] - simulation_parameters["origin"][1])
-        top_right_sensor = math.hypot(self.current_coordinates[0] - simulation_parameters["field_size"][0],
-                                      self.current_coordinates[1] - simulation_parameters["field_size"][1])
-        top_left_sensor = math.hypot(self.current_coordinates[0] - simulation_parameters["top_left_corner"][0],
-                                     self.current_coordinates[1] - simulation_parameters["top_left_corner"][1])
+        bottom_right_sensor = math.hypot(self.current_coordinates[0] - self.simulation_parameters["bottom_right_corner"][0],
+                                         self.current_coordinates[1] - self.simulation_parameters["bottom_right_corner"][1])
+        bottom_left_sensor = math.hypot(self.current_coordinates[0] - self.simulation_parameters["origin"][0],
+                                        self.current_coordinates[1] - self.simulation_parameters["origin"][1])
+        top_right_sensor = math.hypot(self.current_coordinates[0] - self.simulation_parameters["field_size"][0],
+                                      self.current_coordinates[1] - self.simulation_parameters["field_size"][1])
+        top_left_sensor = math.hypot(self.current_coordinates[0] - self.simulation_parameters["top_left_corner"][0],
+                                     self.current_coordinates[1] - self.simulation_parameters["top_left_corner"][1])
         sensor_array = [bottom_left_sensor, bottom_right_sensor, top_left_sensor, top_right_sensor]
         return sensor_array
 
@@ -148,8 +143,8 @@ class Player:
             return sum([(np.linalg.norm(x - c[i]) - r[i]) ** 2 for i in range(len(c))])
 
         receiver_coordinates = list(
-            np.array([simulation_parameters["origin"], simulation_parameters["bottom_right_corner"],
-                      simulation_parameters["top_left_corner"], simulation_parameters["field_size"]]))
+            np.array([self.simulation_parameters["origin"], self.simulation_parameters["bottom_right_corner"],
+                      self.simulation_parameters["top_left_corner"], self.simulation_parameters["field_size"]]))
 
         distances_to_receiver = self.noise_generator(self.receiver_distance()) # apply noise to receiver signals
 
