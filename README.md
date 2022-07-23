@@ -40,6 +40,8 @@ The script should prompt for two user entries:
 
 ![EstimatedAnimation](assets/estimated_positions.png)
 
+![AnimatedPlayers](assets/CodeDemo.gif)
+
 3. Variation of exact player position over simulation time.
 
 ![ExactAnimation](assets/exact_position.png)
